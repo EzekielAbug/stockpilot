@@ -13,6 +13,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.exceptions import register_exception_handlers
 
 # fastapi application
 app = FastAPI(
@@ -34,6 +35,8 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+
+register_exception_handlers(app)
 
 # health check endpoint
 @app.get("/health", tags=["System"])

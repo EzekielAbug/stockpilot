@@ -15,8 +15,8 @@ class Settings(BaseSettings):
 
     Example:
 
-        >>> settings = Settings()
-        >>> print (settings.APP_NAME)
+         settings = Settings()
+         print (settings.APP_NAME)
         'StockPilot'
     """
 

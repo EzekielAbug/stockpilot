@@ -1,0 +1,44 @@
+# docker compose config for stockpilot local dev
+# docker-compose up -d (run)
+# docker-compose down (stop)
+# docker-compose logs -f (view logs)
+
+services:
+  # postgresql db
+  db:
+    image: postgres:16-alpine
+    container_name: stockpilot_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stockpilot
+      POSTGRES_PASSWORD: stockpilot_pass
+      POSTGRES_DB: stockpilot_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stockpilot -d stockpilot_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # redis cache and message broker
+  redis:
+    image: redis:7-alpine
+    container_name: stockpilot_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# named vol persist data even when containers are stopped
+volumes: 
+  postgres_data:
+  redis_data:
