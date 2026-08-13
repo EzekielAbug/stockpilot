@@ -1,0 +1,40 @@
+# web framework
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+
+# database
+sqlalchemy[asyncio]==2.0.41
+asyncpg==0.30.0
+alembic==1.16.1
+
+# authentication
+python-jose[cryptography]==3.4.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.20
+
+# validation and settings
+pydantic==2.11.3
+pydantic-settings==2.9.1
+
+# redis and caching
+redis==5.2.1
+
+# background jobs
+celery[redis]==5.5.3
+
+# email
+aiosmtplib==4.0.1
+jinja2==3.1.6
+
+# file uploads (AWS S3)
+boto3==1.38.34
+
+# http client (for external API calls)
+httpx==0.28.1
+
+# monitoring
+prometheus-fastapi-instrumentator==7.1.0
+
+# utilities
+python-dotenv==1.1.0
+structlog==25.4.0
