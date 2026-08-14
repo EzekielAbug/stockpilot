@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.router import api_v1_router
 from app.config import settings
 from app.exceptions import register_exception_handlers
 
@@ -37,6 +38,7 @@ app.add_middleware(
 )
 
 register_exception_handlers(app)
+app.include_router(api_v1_router, prefix="/api/v1")
 
 # health check endpoint
 @app.get("/health", tags=["System"])
