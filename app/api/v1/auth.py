@@ -24,6 +24,7 @@ from app.schemas.auth import (
     TokenResponse,
 )
 from app.schemas.user import UserResponse
+from app.workers.email_tasks import send_welcome_email_task
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -72,7 +73,10 @@ async def register(
         org_id=organization.id,
     )
     db.add(user)
-    await db.flush()  
+    await db.commit()
+    await db.refresh(user)
+
+    send_welcome_email_task.delay(user.email, user.full_name)  
     
     token_data = {"sub": str(user.id)}
     access_token = create_access_token(token_data)
