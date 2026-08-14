@@ -14,7 +14,7 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.config import settings
-from app.models.base import Base
+from app.models import Base
 
 # all model imports
 
