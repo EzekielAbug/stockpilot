@@ -5,6 +5,8 @@ import uuid
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.middleware.audit import AuditRoute
+
 from app.api.deps import RoleChecker, get_current_active_user
 from app.core.rate_limit import RateLimiter
 from app.database import get_db
@@ -12,7 +14,7 @@ from app.models.user import User, UserRole
 from app.schemas.order import OrderCreate, OrderResponse
 from app.services import order_service
 
-router = APIRouter(tags=["Orders"])
+router = APIRouter(tags=["Orders"], route_class=AuditRoute)
 manager_role = RoleChecker(UserRole.MANAGER)
 
 @router.post(

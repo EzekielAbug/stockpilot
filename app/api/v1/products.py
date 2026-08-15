@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import RoleChecker, get_current_active_user
 from app.database import get_db
+from app.middleware.audit import AuditRoute
 from app.models.user import User, UserRole
 from app.schemas.common import PaginatedResponse
 from app.schemas.product import (
@@ -18,7 +19,7 @@ from app.schemas.product import (
 )
 from app.services import product_service
 
-router = APIRouter(tags=["Catalog"])
+router = APIRouter(tags=["Catalog"], route_class=AuditRoute)
 
 write_role = RoleChecker(UserRole.MANAGER)
 
