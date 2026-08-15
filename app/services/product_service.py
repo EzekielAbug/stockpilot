@@ -126,3 +126,18 @@ async def get_product_by_id(
             detail="Product not found.",
         )
     return product
+
+async def update_product(
+    db: AsyncSession, org_id: uuid.UUID, product_id: uuid.UUID, data: ProductUpdate
+) -> Product:
+    """Update an existing product."""
+    product = await get_product_by_id(db, org_id, product_id)
+    
+    # Update only the fields that were provided in the request
+    update_data = data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(product, key, value)
+        
+    await db.commit()
+    await db.refresh(product)
+    return product

@@ -14,6 +14,7 @@ from app.schemas.product import (
     CategoryResponse,
     ProductCreate,
     ProductResponse,
+    ProductUpdate,
 )
 from app.services import product_service
 
@@ -87,3 +88,13 @@ async def get_product(
 ) -> ProductResponse:
     """Get a specific product by its ID."""
     return await product_service.get_product_by_id(db, current_user.org_id, product_id)
+
+@router.patch("/products/{product_id}", response_model=ProductResponse)
+async def update_product(
+    product_id: uuid.UUID,
+    data: ProductUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(write_role),
+) -> ProductResponse:
+    """Update a product (e.g. adding an image URL)."""
+    return await product_service.update_product(db, current_user.org_id, product_id, data)
