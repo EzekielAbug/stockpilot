@@ -1,5 +1,7 @@
 """Business logic and database operations for catalog management."""
 
+import random
+import string
 import uuid
 from typing import Sequence
 
@@ -42,16 +44,29 @@ async def create_product(
 ) -> Product:
     """Create a new product, ensuring the SKU is unique within the org."""
     
+    sku = data.sku
+    if not sku:
+        # Generate a random SKU like SKU-A1B2C3
+        rand_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        sku = f"SKU-{rand_str}"
+        # Ensure the generated SKU is unique just in case
+        while True:
+            existing = await db.execute(select(Product).where(Product.org_id == org_id, Product.sku == sku))
+            if not existing.scalar_one_or_none():
+                break
+            rand_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            sku = f"SKU-{rand_str}"
+            
     existing = await db.execute(
         select(Product).where(
             Product.org_id == org_id, 
-            Product.sku == data.sku
+            Product.sku == sku
         )
     )
     if existing.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Product with SKU '{data.sku}' already exists.",
+            detail=f"Product with SKU '{sku}' already exists.",
         )
     
     if data.category_id:
@@ -69,7 +84,7 @@ async def create_product(
     
     product = Product(
         name=data.name,
-        sku=data.sku,
+        sku=sku,
         description=data.description,
         price=data.price,
         cost_price=data.cost_price,
@@ -92,8 +107,8 @@ async def get_products(
 ) -> tuple[Sequence[Product], int]:
     """Get a paginated list of products, optionally filtered by search."""
     
-    query = select(Product).where(Product.org_id == org_id)
-    count_query = select(func.count()).where(Product.org_id == org_id)
+    query = select(Product).where(Product.org_id == org_id, Product.is_active == True)
+    count_query = select(func.count()).where(Product.org_id == org_id, Product.is_active == True)
     # Apply search filter if provided
     if search:
         search_term = f"%{search}%"
@@ -141,3 +156,11 @@ async def update_product(
     await db.commit()
     await db.refresh(product)
     return product
+
+async def delete_product(
+    db: AsyncSession, org_id: uuid.UUID, product_id: uuid.UUID
+) -> None:
+    """Soft delete a product."""
+    product = await get_product_by_id(db, org_id, product_id)
+    product.is_active = False
+    await db.commit()

@@ -30,6 +30,8 @@ async def create_order(
         total_amount=0, 
         org_id=org_id,
         created_by_id=user_id,
+        supplier_id=data.supplier_id,
+        customer_id=data.customer_id,
     )
     db.add(order)
     await db.flush()

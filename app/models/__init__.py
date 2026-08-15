@@ -8,6 +8,8 @@ from app.models.product import Product
 from app.models.warehouse import Warehouse
 from app.models.inventory import InventoryItem
 from app.models.order import Order, OrderItem, OrderStatus, OrderType
+from app.models.supplier import Supplier
+from app.models.customer import Customer
 from app.models.audit_log import AuditLog
 
 __all__ = [
@@ -24,5 +26,7 @@ __all__ = [
     "OrderItem",
     "OrderStatus",
     "OrderType",
+    "Supplier",
+    "Customer",
     "AuditLog",
 ]

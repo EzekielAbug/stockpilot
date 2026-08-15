@@ -16,6 +16,11 @@ class WarehouseBase(BaseModel):
 class WarehouseCreate(WarehouseBase):
     pass
 
+class WarehouseUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    location: Optional[str] = None
+    is_active: Optional[bool] = None
+
 class WarehouseResponse(WarehouseBase):
     id: uuid.UUID
     org_id: uuid.UUID

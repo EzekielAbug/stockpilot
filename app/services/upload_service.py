@@ -47,8 +47,9 @@ async def upload_image(file: UploadFile) -> str:
     # 4. Upload to S3 (With Local Dev Mocking)
     if not settings.AWS_ACCESS_KEY_ID:
         # Because we don't have AWS keys yet, we simulate a successful upload!
+        # We return a real, working placeholder image so your frontend UI doesn't look broken!
         print(f"⚠️ LOCAL DEV: Simulating upload of {unique_filename} to S3...")
-        return f"https://{settings.S3_BUCKET_NAME}.s3.{settings.AWS_REGION}.amazonaws.com/{unique_filename}"
+        return f"https://ui-avatars.com/api/?name=Product&background=random&size=128"
         
     try:
         s3_client.put_object(

@@ -14,7 +14,13 @@ class LowStockAlert(BaseModel):
     quantity: int
     min_stock_level: int
 
+class ChartData(BaseModel):
+    date: str
+    revenue: float
+    orders: int
+
 class DashboardResponse(BaseModel):
     """The master schema that combines all dashboard sections."""
     kpis: KPIStats
     low_stock_alerts: list[LowStockAlert]
+    chart_data: list[ChartData]

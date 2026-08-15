@@ -63,11 +63,27 @@ class Order(BaseModel):
         ForeignKey("users.id"),
         nullable=False,
     )
+    supplier_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("suppliers.id"),
+        nullable=True,
+    )
+    customer_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("customers.id"),
+        nullable=True,
+    )
     # ─── Relationships ───
     organization: Mapped["Organization"] = relationship(
         back_populates="orders",
     )
     created_by_user: Mapped["User"] = relationship(
+        back_populates="orders",
+    )
+    supplier: Mapped[Optional["Supplier"]] = relationship(
+        back_populates="orders",
+    )
+    customer: Mapped[Optional["Customer"]] = relationship(
         back_populates="orders",
     )
     items: Mapped[list["OrderItem"]] = relationship(

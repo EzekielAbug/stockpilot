@@ -8,6 +8,8 @@ from app.api.v1.inventory import router as inventory_router
 from app.api.v1.orders import router as order_router
 from app.api.v1.products import router as products_router
 from app.api.v1.uploads import router as uploads_router
+from app.api.v1.suppliers import router as suppliers_router
+from app.api.v1.customers import router as customers_router
 
 api_v1_router = APIRouter()
 
@@ -20,5 +22,9 @@ api_v1_router.include_router(inventory_router)
 api_v1_router.include_router(order_router)
 
 api_v1_router.include_router(dashboard_router)
+
+api_v1_router.include_router(suppliers_router)
+
+api_v1_router.include_router(customers_router)
 
 api_v1_router.include_router(uploads_router)

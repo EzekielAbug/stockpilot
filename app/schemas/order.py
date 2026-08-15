@@ -25,6 +25,8 @@ class OrderItemResponse(OrderItemBase):
 class OrderCreate(BaseModel):
     order_type: OrderType
     notes: Optional[str] = None
+    supplier_id: Optional[uuid.UUID] = None
+    customer_id: Optional[uuid.UUID] = None
     items: list[OrderItemBase] = Field(min_length=1)
     
 class OrderResponse(BaseModel):
@@ -36,6 +38,8 @@ class OrderResponse(BaseModel):
     notes: Optional[str]
     org_id: uuid.UUID
     created_by_id: uuid.UUID
+    supplier_id: Optional[uuid.UUID] = None
+    customer_id: Optional[uuid.UUID] = None
     created_at: datetime
     items: list[OrderItemResponse]
     model_config = ConfigDict(from_attributes=True)

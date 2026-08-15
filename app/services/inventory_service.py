@@ -39,6 +39,46 @@ async def get_warehouses(
     )
     return result.scalars().all()
 
+async def get_warehouse_by_id(
+    db: AsyncSession, org_id: uuid.UUID, warehouse_id: uuid.UUID
+) -> Warehouse:
+    """Get a single warehouse by ID."""
+    result = await db.execute(
+        select(Warehouse).where(
+            Warehouse.id == warehouse_id,
+            Warehouse.org_id == org_id
+        )
+    )
+    wh = result.scalar_one_or_none()
+    if not wh:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Warehouse not found.",
+        )
+    return wh
+
+async def update_warehouse(
+    db: AsyncSession, org_id: uuid.UUID, warehouse_id: uuid.UUID, data: WarehouseCreate
+) -> Warehouse:
+    """Update an existing warehouse."""
+    wh = await get_warehouse_by_id(db, org_id, warehouse_id)
+    
+    update_data = data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(wh, key, value)
+        
+    await db.commit()
+    await db.refresh(wh)
+    return wh
+
+async def delete_warehouse(
+    db: AsyncSession, org_id: uuid.UUID, warehouse_id: uuid.UUID
+) -> None:
+    """Soft delete a warehouse."""
+    wh = await get_warehouse_by_id(db, org_id, warehouse_id)
+    wh.is_active = False
+    await db.commit()
+
 # INVENTORY 
 
 async def adjust_stock(

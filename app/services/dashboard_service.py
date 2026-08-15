@@ -9,7 +9,7 @@ from app.models.inventory import InventoryItem
 from app.models.order import Order, OrderStatus, OrderType
 from app.models.product import Product
 from app.models.warehouse import Warehouse
-from app.schemas.dashboard import KPIStats, LowStockAlert
+from app.schemas.dashboard import KPIStats, LowStockAlert, ChartData
 
 
 async def get_kpi_stats(db: AsyncSession, org_id: uuid.UUID) -> KPIStats:
@@ -76,3 +76,39 @@ async def get_low_stock_alerts(db: AsyncSession, org_id: uuid.UUID) -> list[LowS
         ))
         
     return alerts
+
+async def get_chart_data(db: AsyncSession, org_id: uuid.UUID) -> list[ChartData]:
+    """Get the last 30 days of sales data grouped by day."""
+    
+    valid_statuses = [
+        OrderStatus.CONFIRMED.value, 
+        OrderStatus.PROCESSING.value, 
+        OrderStatus.SHIPPED.value, 
+        OrderStatus.DELIVERED.value
+    ]
+    
+    query = select(
+        func.date(Order.created_at).label("sale_date"),
+        func.sum(Order.total_amount).label("revenue"),
+        func.count(Order.id).label("orders")
+    ).where(
+        Order.org_id == org_id,
+        Order.order_type == OrderType.SALE.value,
+        Order.status.in_(valid_statuses)
+    ).group_by(
+        func.date(Order.created_at)
+    ).order_by(
+        func.date(Order.created_at).asc()
+    ).limit(30)
+    
+    result = await db.execute(query)
+    
+    chart_data = []
+    for row in result:
+        chart_data.append(ChartData(
+            date=row.sale_date.strftime("%b %d"),
+            revenue=float(row.revenue or 0.0),
+            orders=int(row.orders or 0)
+        ))
+        
+    return chart_data

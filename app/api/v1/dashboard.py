@@ -27,8 +27,9 @@ async def get_dashboard(
         
     kpis = await dashboard_service.get_kpi_stats(db, current_user.org_id)
     alerts = await dashboard_service.get_low_stock_alerts(db, current_user.org_id)
+    chart_data = await dashboard_service.get_chart_data(db, current_user.org_id)
     
-    response_data = DashboardResponse(kpis=kpis, low_stock_alerts=alerts)
+    response_data = DashboardResponse(kpis=kpis, low_stock_alerts=alerts, chart_data=chart_data)
 
     await set_cache(cache_key, response_data.model_dump(), expire_seconds=300)
     

@@ -9,6 +9,7 @@ from app.middleware.audit import AuditRoute
 
 from app.api.deps import RoleChecker, get_current_active_user
 from app.core.rate_limit import RateLimiter
+from app.core.cache import invalidate_cache
 from app.database import get_db
 from app.models.user import User, UserRole
 from app.schemas.order import OrderCreate, OrderResponse
@@ -51,4 +52,6 @@ async def confirm_order(
 ) -> OrderResponse:
     """Confirm a DRAFT order. If it's a SALE, this deducts inventory."""
     
-    return await order_service.confirm_order(db, current_user.org_id, order_id)
+    order = await order_service.confirm_order(db, current_user.org_id, order_id)
+    await invalidate_cache(f"dashboard_data:{current_user.org_id}")
+    return order

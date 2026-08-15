@@ -52,5 +52,11 @@ class Organization(BaseModel):
     orders: Mapped[list["Order"]] = relationship (
         back_populates="organization",
     )
+    suppliers: Mapped[list["Supplier"]] = relationship (
+        back_populates="organization",
+    )
+    customers: Mapped[list["Customer"]] = relationship (
+        back_populates="organization",
+    )
     def __repr__(self) -> str:
         return f"Organization(name='{self.name}', slug='{self.slug}')"

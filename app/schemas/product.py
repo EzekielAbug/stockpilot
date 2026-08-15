@@ -27,7 +27,7 @@ class CategoryResponse(CategoryBase):
 
 class ProductBase(BaseModel):
     name: str = Field(min_length=1, max_length=255)
-    sku: str = Field(min_length=1, max_length=100)
+    sku: Optional[str] = Field(None, max_length=100)
     description: Optional[str] = None
     price: float = Field(ge=0)  # Greater than or equal to 0
     cost_price: Optional[float] = Field(None, ge=0)

@@ -53,6 +53,19 @@ async def create_product(
     """Create a new product."""
     return await product_service.create_product(db, current_user.org_id, data)
 
+@router.post("/products/bulk-import")
+async def bulk_import_products(
+    data: list[ProductCreate],
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(write_role),
+):
+    """Import multiple products from CSV."""
+    created_count = 0
+    for item in data:
+        await product_service.create_product(db, current_user.org_id, item)
+        created_count += 1
+    return {"message": f"Successfully imported {created_count} products."}
+
 @router.get("/products", response_model=PaginatedResponse[ProductResponse])
 async def list_products(
     page: int = Query(1, ge=1),
@@ -97,5 +110,14 @@ async def update_product(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(write_role),
 ) -> ProductResponse:
-    """Update a product (e.g. adding an image URL)."""
+    """Update a product."""
     return await product_service.update_product(db, current_user.org_id, product_id, data)
+
+@router.delete("/products/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_product(
+    product_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(write_role),
+) -> None:
+    """Soft delete a product."""
+    await product_service.delete_product(db, current_user.org_id, product_id)
