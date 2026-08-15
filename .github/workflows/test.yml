@@ -44,6 +44,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
+    - name: Run Database Migrations
+      env:
+        DATABASE_URL: postgresql+asyncpg://stockpilot:stockpilot_pass@localhost:5432/stockpilot_db
+      run: |
+        alembic upgrade head
+
     - name: Run Pytest
       env:
         DATABASE_URL: postgresql+asyncpg://stockpilot:stockpilot_pass@localhost:5432/stockpilot_db
