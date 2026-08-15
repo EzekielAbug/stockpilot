@@ -2,9 +2,11 @@
 # docker-compose up -d (run)
 # docker-compose down (stop)
 # docker-compose logs -f (view logs)
+# docker-compose up -d --build
+
 
 services:
-  # postgresql db
+  # 1. PostgreSQL Database
   db:
     image: postgres:16-alpine
     container_name: stockpilot_db
@@ -22,8 +24,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # redis cache and message broker
+  # 2. Redis Cache & Job Queue
   redis:
     image: redis:7-alpine
     container_name: stockpilot_redis
@@ -37,8 +38,40 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-# named vol persist data even when containers are stopped
+  # 3. FastAPI Backend
+  api:
+    build: .
+    container_name: stockpilot_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Override localhost to use the internal docker network names!
+      - DATABASE_URL=postgresql+asyncpg://stockpilot:stockpilot_pass@db:5432/stockpilot_db
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET_KEY=supersecretkeychangemeinproduction12345
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=15
+      - REFRESH_TOKEN_EXPIRE_DAYS=7
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  # 4. Celery Background Worker
+  worker:
+    build: .
+    container_name: stockpilot_worker
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://stockpilot:stockpilot_pass@db:5432/stockpilot_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
 volumes: 
   postgres_data:
   redis_data:
