@@ -1,6 +1,6 @@
 
 
-https://github.com/user-attachments/assets/0637151b-ba90-4298-ada8-8d0e4261a0ee
+https://github.com/user-attachments/assets/e2711617-8bc3-46bb-9565-d8f89addecb9
 
 # StockPilot API
 
