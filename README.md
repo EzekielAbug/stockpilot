@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/0637151b-ba90-4298-ada8-8d0e4261a0ee
+
 # StockPilot API
 
 > A B2B Inventory SaaS Backend built with FastAPI, PostgreSQL, and Redis.
