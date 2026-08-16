@@ -27,8 +27,8 @@ erDiagram
     Order ||--o{ OrderItem : "contains"
     Product ||--o{ OrderItem : "included in"
     
-    Customer |o--o{ Order : "places (sales)"
-    Supplier |o--o{ Order : "fulfills (purchases)"
+    Customer |o--o{ Order : "places sales"
+    Supplier |o--o{ Order : "fulfills purchases"
 ```
 
 > [!NOTE]
@@ -41,11 +41,11 @@ To ensure the FastAPI event loop is never blocked by long-running operations (li
 
 ```mermaid
 sequenceDiagram
-    participant C as Client (Frontend)
-    participant A as FastAPI (API Router)
+    participant C as Client - Frontend
+    participant A as FastAPI - API Router
     participant DB as PostgreSQL
-    participant R as Redis (Broker)
-    participant W as Celery (Worker)
+    participant R as Redis - Broker
+    participant W as Celery - Worker
     
     C->>A: POST /auth/register
     A->>DB: async INSERT (User, Organization)
@@ -55,7 +55,7 @@ sequenceDiagram
     
     Note over R, W: Background Processing
     R->>W: dequeue task
-    W->>W: send email (aiosmtplib)
+    W->>W: send email via aiosmtplib
     W-->>R: mark completed
 ```
 
