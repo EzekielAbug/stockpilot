@@ -4,7 +4,8 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from .validators import sanitize_html
 
 # CATEGORY
 
@@ -12,6 +13,11 @@ class CategoryBase(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     description: Optional[str] = None
     parent_id: Optional[uuid.UUID] = None
+
+    @field_validator("name", "description", mode="before")
+    @classmethod
+    def sanitize_fields(cls, v: str | None) -> str | None:
+        return sanitize_html(v)
 
 class CategoryCreate(CategoryBase):
     pass
@@ -35,6 +41,11 @@ class ProductBase(BaseModel):
     category_id: Optional[uuid.UUID] = None
     is_active: bool = True
 
+    @field_validator("name", "sku", "description", mode="before")
+    @classmethod
+    def sanitize_fields(cls, v: str | None) -> str | None:
+        return sanitize_html(v)
+
 class ProductCreate(ProductBase):
     pass
 
@@ -46,6 +57,11 @@ class ProductUpdate(BaseModel):
     image_url: Optional[str] = None
     category_id: Optional[uuid.UUID] = None
     is_active: Optional[bool] = None
+
+    @field_validator("name", "description", mode="before")
+    @classmethod
+    def sanitize_fields(cls, v: str | None) -> str | None:
+        return sanitize_html(v)
     
 class ProductResponse(ProductBase):
     id: uuid.UUID

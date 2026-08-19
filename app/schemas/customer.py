@@ -1,41 +1,42 @@
-import re
 import uuid
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, EmailStr
+from .validators import sanitize_html, validate_phone
 
 class CustomerBase(BaseModel):
     name: str
-    email: str | None = None
+    email: EmailStr | None = None
     phone: str | None = None
     address: str | None = None
 
-    @field_validator("phone")
+    @field_validator("name", "address", mode="before")
     @classmethod
-    def validate_phone(cls, v: str | None) -> str | None:
-        if not v:
-            return v
-        # Basic E.164 standard or minimum digits (at least 7, max 15, optional +)
-        if not re.match(r"^\+?[0-9]{7,15}$", re.sub(r"[\s\-\(\)]", "", v)):
-            raise ValueError("Invalid phone number format")
-        return v
+    def sanitize_fields(cls, v: str | None) -> str | None:
+        return sanitize_html(v)
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def validate_phone_number(cls, v: str | None) -> str | None:
+        return validate_phone(v)
 
 class CustomerCreate(CustomerBase):
     pass
 
 class CustomerUpdate(BaseModel):
     name: str | None = None
-    email: str | None = None
+    email: EmailStr | None = None
     phone: str | None = None
     address: str | None = None
     is_active: bool | None = None
 
-    @field_validator("phone")
+    @field_validator("name", "address", mode="before")
     @classmethod
-    def validate_phone(cls, v: str | None) -> str | None:
-        if not v:
-            return v
-        if not re.match(r"^\+?[0-9]{7,15}$", re.sub(r"[\s\-\(\)]", "", v)):
-            raise ValueError("Invalid phone number format")
-        return v
+    def sanitize_fields(cls, v: str | None) -> str | None:
+        return sanitize_html(v)
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def validate_phone_number(cls, v: str | None) -> str | None:
+        return validate_phone(v)
 
 class CustomerResponse(CustomerBase):
     id: uuid.UUID

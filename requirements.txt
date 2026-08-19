@@ -17,6 +17,7 @@ python-multipart==0.0.20
 pydantic==2.11.3
 pydantic-settings==2.9.1
 email-validator==2.2.0
+phonenumbers==8.13.31
 
 # redis and caching
 redis==5.2.1
