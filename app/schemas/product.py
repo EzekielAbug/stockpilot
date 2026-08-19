@@ -14,13 +14,11 @@ class CategoryBase(BaseModel):
     description: Optional[str] = None
     parent_id: Optional[uuid.UUID] = None
 
+class CategoryCreate(CategoryBase):
     @field_validator("name", "description", mode="before")
     @classmethod
     def sanitize_fields(cls, v: str | None) -> str | None:
         return sanitize_html(v)
-
-class CategoryCreate(CategoryBase):
-    pass
 
 class CategoryResponse(CategoryBase):
     id: uuid.UUID
@@ -41,13 +39,11 @@ class ProductBase(BaseModel):
     category_id: Optional[uuid.UUID] = None
     is_active: bool = True
 
+class ProductCreate(ProductBase):
     @field_validator("name", "sku", "description", mode="before")
     @classmethod
     def sanitize_fields(cls, v: str | None) -> str | None:
         return sanitize_html(v)
-
-class ProductCreate(ProductBase):
-    pass
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)

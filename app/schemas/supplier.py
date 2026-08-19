@@ -5,9 +5,12 @@ from .validators import sanitize_html, validate_phone
 class SupplierBase(BaseModel):
     name: str
     contact_name: str | None = None
-    email: EmailStr | None = None
+    email: str | None = None
     phone: str | None = None
     address: str | None = None
+
+class SupplierCreate(SupplierBase):
+    email: EmailStr | None = None
 
     @field_validator("name", "contact_name", "address", mode="before")
     @classmethod
@@ -18,9 +21,6 @@ class SupplierBase(BaseModel):
     @classmethod
     def validate_phone_number(cls, v: str | None) -> str | None:
         return validate_phone(v)
-
-class SupplierCreate(SupplierBase):
-    pass
 
 class SupplierUpdate(BaseModel):
     name: str | None = None

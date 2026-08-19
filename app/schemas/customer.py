@@ -2,11 +2,15 @@ import uuid
 from pydantic import BaseModel, field_validator, EmailStr
 from .validators import sanitize_html, validate_phone
 
+# Base has loose types so legacy DB data won't crash on GET requests
 class CustomerBase(BaseModel):
     name: str
-    email: EmailStr | None = None
+    email: str | None = None
     phone: str | None = None
     address: str | None = None
+
+class CustomerCreate(CustomerBase):
+    email: EmailStr | None = None
 
     @field_validator("name", "address", mode="before")
     @classmethod
@@ -17,9 +21,6 @@ class CustomerBase(BaseModel):
     @classmethod
     def validate_phone_number(cls, v: str | None) -> str | None:
         return validate_phone(v)
-
-class CustomerCreate(CustomerBase):
-    pass
 
 class CustomerUpdate(BaseModel):
     name: str | None = None
