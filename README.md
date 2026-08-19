@@ -59,6 +59,7 @@ StockPilot takes data isolation and security seriously:
 *   **Authentication Flow:** I utilize short-lived JSON Web Tokens (JWT) for access control, paired with HTTP-only, secure cookies for seamless frontend integration without exposing tokens to XSS vulnerabilities.
 *   **Password Hashing:** Passwords are never stored in plaintext. They are hashed using `bcrypt` via the `passlib` context.
 *   **CORS Configuration:** Explicitly controlled Cross-Origin Resource Sharing ensures only authorized frontend domains can interact with the API.
+*   **Input Validation:** Uses Pydantic to enforce valid email and phone number formats, and strips HTML tags from text inputs to prevent XSS injection.
 
 ## Documentation Index
 
