@@ -62,6 +62,7 @@ sequenceDiagram
 ### Key Technical Choices
 - **`asyncpg` Engine:** I use the `asyncpg` driver for SQLAlchemy instead of the traditional synchronous `psycopg2`. This allows high-concurrency connection pooling, crucial for handling simultaneous POS transactions.
 - **Pydantic Validation:** All incoming and outgoing data passes through strict Pydantic schemas, preventing injection attacks and ensuring type safety at the API boundary.
+- **Redis Rate Limiting:** I built a custom dependency that connects to Redis to track IP addresses, explicitly rate-limiting sensitive routes (like authentication and order creation) to prevent brute-force attacks and system abuse.
 
 ## Future Roadmap & Areas for Improvement
 
@@ -76,10 +77,6 @@ While the current architecture is robust and production-ready, enterprise system
 **Goal:** Prevent race conditions in inventory management.
 - If two employees in the same Organization are managing inventory, they should see stock levels update instantly without refreshing.
 - Implement FastAPI WebSockets connected to a Redis Pub/Sub channel (partitioned by `org_id`) to broadcast inventory changes to all active client sessions.
-
-### 3. API Rate Limiting
-**Goal:** Protect against DDoS and brute-force attacks.
-- Utilize my existing Redis cache to implement IP-based and User-based rate limiting (e.g., maximum 10 login attempts per minute, 100 API requests per minute).
 
 ### 4. Advanced Auditing (Event Sourcing)
 **Goal:** Perfect traceability for accounting purposes.

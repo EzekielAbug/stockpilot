@@ -39,6 +39,15 @@ Returned when a resource does not exist, OR when `is_active` is `false` (soft-de
 ```
 **Resolution:** Display a 404 page or remove the item from the local UI state.
 
+### 429 Too Many Requests
+Returned when a client exceeds the IP-based rate limit for a specific endpoint (e.g., `/auth/login`).
+```json
+{
+  "detail": "Rate limit exceeded. Maximum 10 requests per 60 seconds."
+}
+```
+**Resolution:** The frontend should display a cooldown message and disable the submit button until the window resets.
+
 ---
 
 ## Authentication (`/api/v1/auth`)

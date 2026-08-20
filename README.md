@@ -60,6 +60,7 @@ StockPilot takes data isolation and security seriously:
 *   **Password Hashing:** Passwords are never stored in plaintext. They are hashed using `bcrypt` via the `passlib` context.
 *   **CORS Configuration:** Explicitly controlled Cross-Origin Resource Sharing ensures only authorized frontend domains can interact with the API.
 *   **Input Validation:** Uses Pydantic to enforce valid email and phone number formats, and strips HTML tags from text inputs to prevent XSS injection.
+*   **Rate Limiting:** Critical endpoints (like login and register) are protected by a custom Redis-based rate limiter to prevent brute-force and bot attacks.
 
 ## Documentation Index
 
