@@ -14,6 +14,7 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
+from app.core.rate_limit import RateLimiter
 from app.database import get_db
 from app.models.organization import Organization
 from app.models.user import User, UserRole
@@ -34,7 +35,7 @@ def _generate_slug(name: str) -> str:
     return name.lower().replace(" ", "-").strip()
 
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(RateLimiter(requests=5, window_seconds=60))])
 async def register(
     data: RegisterRequest,
     db: AsyncSession = Depends(get_db),
@@ -89,7 +90,7 @@ async def register(
         refresh_token=refresh_token,
     )
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, dependencies=[Depends(RateLimiter(requests=10, window_seconds=60))])
 async def login(
     data: LoginRequest,
     db: AsyncSession = Depends(get_db),
