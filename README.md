@@ -56,7 +56,7 @@ You can view the interactive Swagger Documentation at `http://localhost:8000/doc
 
 StockPilot takes data isolation and security seriously:
 *   **Multi-Tenancy:** Every resource is tied to an `org_id`. The API layer strictly validates that users can only access and modify records belonging to their authenticated organization.
-*   **Authentication Flow:** I utilize short-lived JSON Web Tokens (JWT) for access control, paired with HTTP-only, secure cookies for seamless frontend integration without exposing tokens to XSS vulnerabilities.
+*   **Authentication Flow:** I utilize short-lived JSON Web Tokens (JWT) for stateless access control. To protect user sessions from token theft, all inputs are strictly sanitized on the backend, and React's native escaping neutralizes XSS threats on the frontend.
 *   **Password Hashing:** Passwords are never stored in plaintext. They are hashed using `bcrypt` via the `passlib` context.
 *   **CORS Configuration:** Explicitly controlled Cross-Origin Resource Sharing ensures only authorized frontend domains can interact with the API.
 *   **Input Validation:** Uses Pydantic to enforce valid email and phone number formats, and strips HTML tags from text inputs to prevent XSS injection.
